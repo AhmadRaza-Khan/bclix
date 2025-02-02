@@ -11,7 +11,31 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      animation: {
+        'gradual-bounce': 'gradualBounce 2s ease-in-out infinite',
+      },
+      keyframes: {
+        gradualBounce: {
+          '0%, 100%': {
+            transform: 'translateY(0)',
+            animationTimingFunction: 'ease-in',
+          },
+          '30%': {
+            transform: 'translateY(-20px)',
+          },
+          '50%': {
+            transform: 'translateY(0)',
+            animationTimingFunction: 'ease-out',
+          },
+          '70%': {
+            transform: 'translateY(-10px)',
+          },
+          '90%': {
+            transform: 'translateY(0)',
+          },
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [require('daisyui'),],
 };
