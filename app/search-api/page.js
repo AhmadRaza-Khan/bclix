@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import SearchIcon from '@mui/icons-material/Search';
 import { useRef } from "react";
 import { getAPIAction } from "@/actions/page";
+import Dropdown from "@/components/Dropdown";
 const SearchApi = () => {
     const router = useRouter();
     const [search, setSearch] = useState("");
@@ -37,6 +38,7 @@ const SearchApi = () => {
 
   return (
     <div className="flex flex-col justify-center items-center py-96">
+      <Dropdown />
          <div className="w-96 relative">
       <input
       value={search}

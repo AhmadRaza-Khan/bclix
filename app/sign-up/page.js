@@ -35,7 +35,7 @@ export default function SignUpPage() {
         })
             
         setData(initialData);
-        router.refresh();
+        router.push("sign-in");
       }
     } catch (error) {
         toast.error("Failed to register due to: ", error, {
@@ -119,7 +119,7 @@ export default function SignUpPage() {
    value={data.password}
    onChange={(e) => setData({ ...data, password: e.target.value })}
    className="grow" 
-   placeholder="Name" 
+   placeholder="Password" 
    />
 </label>
         {/* Submit Button */}

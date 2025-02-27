@@ -9,7 +9,7 @@ const RatingStars = ({ rating }) => {
       <div className="w-5 flex ">
 
         {[...Array(fullStars)].map((_, i) => (
-          <StarOutlineOutlinedIcon sx={{'fontSize': 12}} className='text-black' />
+          <StarOutlineOutlinedIcon key={i} sx={{'fontSize': 12}} className='text-black' />
         ))}
         {hasHalfStar && (
           <StarHalfOutlinedIcon sx={{'fontSize': 12}}  className='text-black' />

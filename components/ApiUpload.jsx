@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { logoutAction, uploadNewAPI } from "@/actions/page";
+import { uploadNewAPI } from "@/actions/page";
+import CloseIcon from '@mui/icons-material/Close';
 import { toast } from "react-toastify";
-import Cookies from "js-cookie";
 let initialData = {
   title: "",
   category: "",
@@ -12,7 +12,7 @@ let initialData = {
   image: "",
 };
 
-export default function APIUploadPage() {
+export default function APIUploadPage({close, setClose}) {
   const [data, setData] = useState(initialData);
   const [token, setToken] = useState();
   const [imageFile, setImageFile] = useState(null);
@@ -75,29 +75,20 @@ export default function APIUploadPage() {
     }
   };
 
-  const handleLogout = async() => {
-    const response = await logoutAction();
-    if (response.success) {
-        Cookies.remove('token', { path: '/' });
-        console.log(response)
-        router.push('/');
-    } else {
-        console.error(response.message);
-    }
-  };
   return (
     <div className="flex items-center justify-center py-10 px-4">
-      <button className="text-4xl text-white" onClick={handleLogout}>Logout</button>
-      <form
+        {
+            close && 
+<form
         onSubmit={handleSubmit}
         className="flex flex-col w-full max-w-lg bg-black shadow-slate-400 shadow-2xl rounded-lg p-6 transition-transform transform scale-95 hover:scale-100"
       >
-        {/* <div className="flex justify-end">
-          <IoClose
+        <div className="flex justify-end">
+          <CloseIcon
             className="text-2xl text-gray-600 cursor-pointer hover:text-red-500"
             onClick={() => setClose(!close)}
           />
-        </div> */}
+        </div>
   
         <h2 className="text-2xl font-bold text-center text-gray-600 mb-5">
           Upload API
@@ -203,6 +194,8 @@ export default function APIUploadPage() {
           Upload API
         </button>
       </form>
+        }
+      
   </div>
   
   );

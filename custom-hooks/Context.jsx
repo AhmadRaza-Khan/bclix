@@ -6,43 +6,41 @@ const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDropdown2, setIsDropdown2] = useState(false);
+  const [show, setShow] = useState(false);
   const [theme, setTheme] = useState("light");
   const [user, setUser] = useState("");
-  const [userId, setUserId] = useState("");  // Add userId state
+  const [userEmail, setUserEmail] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const dropdownRef = useRef(null);
   const dropdownRef2 = useRef(null);
 
-  // Load user, userId, and theme data from localStorage on initial load
   useEffect(() => {
     const savedUser = JSON.parse(localStorage.getItem("user"));
-    const savedUserId = localStorage.getItem("userId");  // Retrieve userId
+    const savedUserEmail = localStorage.getItem("userEmail");
     const savedTheme = localStorage.getItem("theme");
 
     if (savedUser) {
       setUser(savedUser);
       setIsLoggedIn(true);
     }
-    if (savedUserId) {
-      setUserId(savedUserId);  // Set userId if available
+    if (savedUserEmail) {
+      setUserEmail(savedUserEmail);
     }
     if (savedTheme) {
       setTheme(savedTheme);
     }
   }, []);
 
-  // Listen for changes in user, userId, and theme to persist them to localStorage
   useEffect(() => {
-    if (user && userId) {
-      localStorage.setItem("user", JSON.stringify(user));  // Persist user info
-      localStorage.setItem("userId", userId);  // Persist userId
+    if (user && userEmail) {
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("userEmail", userEmail);
     }
     if (theme) {
-      localStorage.setItem("theme", theme);  // Persist theme
+      localStorage.setItem("theme", theme); 
     }
-  }, [user, userId, theme]);  // Make sure to include userId
+  }, [user, userEmail, theme]); 
 
-  // Handle clicks outside of dropdowns to close them
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -71,39 +69,44 @@ export const AppProvider = ({ children }) => {
     };
   }, []);
 
-  // Toggle theme between light and dark
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
-
-  // Login functionality to store user and userId
-  const login = (userInfo, userId) => {
-    console.log("Login attempt:", userInfo);  // Debugging log
-    if (userInfo && userId) {
+  const admin = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  const login = (userInfo, userEmail) => {
+    console.log("Login attempt:", userInfo);
+    if (userInfo && userEmail) {
+      
       setUser(userInfo);
-      setUserId(userId);  // Store userId
+      setUserEmail(userEmail);
       setIsLoggedIn(true);
+      if(userEmail == admin){
+        setShow(true)
+      } else {
+        setShow(false)
+      }
     } else {
-      console.log("Invalid user info or userId");
+      console.log("Invalid user info or userEmail");
     }
   };
 
-  // Logout functionality to clear user and userId data
   const logout = () => {
+    setShow(false)
     setUser(null);
-    setUserId(null);  // Clear userId
+    setUserEmail(null);
     setIsLoggedIn(false);
-    localStorage.removeItem("user");  // Clear user info from localStorage
-    localStorage.removeItem("userId");  // Clear userId from localStorage
+    localStorage.removeItem("user");
+    localStorage.removeItem("userEmail");
   };
 
   const value = {
+    show,
     theme,
     toggleTheme,
     user,
     setUser,
-    userId,  // Provide userId in context
-    setUserId,  // Allow updating userId
+    userEmail,
+    setUserEmail,
     isLoggedIn,
     login,
     logout,

@@ -17,6 +17,14 @@ const StaffSchema = new Schema({
         type: String,
         required: true
     },
+    email: {
+        type: String,
+        required: true
+    },
+    phone: {
+        type: String,
+        required: true
+    },
     status: {
         type: Boolean,
         default: true

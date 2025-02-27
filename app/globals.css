@@ -12,3 +12,8 @@ body {
   
 }
 
+@layer utilities {
+  .own-transform {
+    transform: rotateY(-45deg);
+  }
+}

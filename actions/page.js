@@ -7,12 +7,10 @@ import User from "@/models/User";
 
 import jwt from 'jsonwebtoken';
 import bcrypt from "bcrypt";
-import { pusher } from "@/lib/pusher";
-import Chat from "@/models/Chat";
-import Conversation from "@/models/Conversation";
+import UserConversation from "@/models/Conversation";
+import Quote from "@/models/Quote";
+import RequestQuote from "@/models/RequestQuote";
 
-
-const string = process.env.NEXT_PUBLIC_SECRET_STRING
 const addNewAPI = Joi.object({
   title: Joi.string().required(),
   category: Joi.string().required(),
@@ -33,8 +31,28 @@ const addNewTestimonial = Joi.object({
 const signUpValidation = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().required(),
-  password: Joi.string().required()
+  password: Joi.string().required(),
+  role: Joi.string().default('admin')
 });
+
+
+const requestQuoteValidation = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string().email().required(),
+  phone: Joi.string().required(),
+  country: Joi.string().required(),
+  projectCategory: Joi.string().required(),
+  description: Joi.string().required(),
+  uploadedFiles: Joi.array().items(
+      Joi.object({
+          url: Joi.string().uri().required(),
+          fileType: Joi.string().required(),
+          filename: Joi.string().required()
+      })
+  ).optional()
+});
+
+
 
 const signInValidation = Joi.object({
   email: Joi.string().required(),
@@ -201,7 +219,7 @@ export async function getTestimonialAction() {
 export async function getLimitedTestimonialAction() {
   try {
       await connectDB();
-  const testimonialsData = await Testimonial.find({}).limit(3);
+  const testimonialsData = await Testimonial.find({}).limit(4);
             return {
               success: true,
               data: JSON.parse(JSON.stringify(testimonialsData)),
@@ -222,11 +240,12 @@ export async function SignUpAction(formData) {
   try {
     await connectDB();
     const { name, email, password } = formData || {};
-
+    const role = "general";
     const { error } = signUpValidation.validate({
       name,
       email,
-      password
+      password,
+      role
     });
 
     if (error) {
@@ -239,11 +258,11 @@ export async function SignUpAction(formData) {
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
     const newlyRegisteredUser = await User.create({
       name,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      role
     });
 
     if (newlyRegisteredUser) {
@@ -266,22 +285,29 @@ export async function SignUpAction(formData) {
   }
 }
 
-export async function getUser() {
+export async function getUser (userEmail) {
   try {
       await connectDB();
-  const data = await User.find({});
-            return {
-              success: true,
-              data: JSON.parse(JSON.stringify(data)),
-              message: "data fetched Successfully!!",
+      const data = await User.findOne({ email: userEmail });
+      if (!data) {
+          return {
+              success: false,
+              message: "User  not found.",
           };
-      
-      
+      }
+
+
+      return {
+          success: true,
+          data: JSON.parse(JSON.stringify(data)),
+          message: "Data fetched successfully!",
+      };
+
   } catch (error) {
-      console.log(error);
+      console.error("Error fetching user:", error); // More context in error logging
       return {
           success: false,
-          message: "Something went wrong. Try again!!",
+          message: "Something went wrong. Try again!",
       };
   }
 }
@@ -333,7 +359,8 @@ export async function LoginAction(formData) {
       message: "Login successful!",
       token,
       name: existingUser.name,
-      id: existingUser._id.toString()
+      email: existingUser.email,
+      role: existingUser.role
     };
     
   } catch (error) {
@@ -364,96 +391,190 @@ export async function logoutAction() {
 
 
 
-export async function sendMessage({ sender, message }) {
-    await pusher.trigger("chat-channel", "new-message", {
-        sender,
-        message,
-    });
+export async function deleteConversations() {
+  try {
+    await connectDB();
+        await RequestQuote.deleteMany({});
 
-    return { success: true };
+        return { success: true, message: "All conversations deleted." };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Failed to delete." };
+  }
+}
+export async function deleteUsers() {
+  try {
+    await connectDB();
+        await User.deleteMany({});
+
+        return { success: true, message: "All Users deleted." };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Failed to delete." };
+  }
 }
 
-
-export async function sendMessageAction({ sender, message, userId, adminId }) {
+export async function sendQuoteAction({ userEmail, senderEmail, message = "", files = [] }) {
+  console.log("userEmail", userEmail)
+  console.log("senderEmail", senderEmail)
   try {
     await connectDB();
 
-    let conversation = await Conversation.findOne({
-      userId,
-      adminId,
-    });
+    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
-    if (!conversation) {
+    let quote = await Quote.findOne({ userEmail, adminEmail });
 
-      conversation = await Conversation.create({
-        userId,
-        adminId,
+    if (!quote) {
+      quote = new Quote({
+        adminEmail: adminEmail,
+        senderEmail: senderEmail,
+        userEmail: userEmail,
+        messages: [],
       });
     }
 
-    const newChatMessage = await Chat.create({
-      conversationId: conversation._id,
-      sender,
-      message,
+    if (!message.trim() && files.length === 0) {
+      return {
+        success: false,
+        message: "Either a message or a file is required.",
+      };
+    }
+
+    quote.messages.push({
+      senderEmail: senderEmail,
+      message: message?.trim() || files[0].fileType + "file",
+      files: files.length
+        ? files.map((file) => ({
+            url: file.url,
+            filename: file.filename,
+            fileType: file.fileType,
+          }))
+        : [],
+      timestamp: new Date(),
     });
+
+    await quote.save();
 
     return {
       success: true,
-      message: "Message sent successfully!",
+      message: "Quote submitted successfully!",
     };
   } catch (error) {
-    console.error(error);
+    console.error("Error saving quote:", error);
     return {
       success: false,
-      message: "Something went wrong. Try again.",
+      message: "Something went wrong. Please try again.",
     };
   }
 }
 
 
-export async function getChatAction({userId, adminId}) {
-  try {
-    // Find conversation based on userId and adminId
-    const conversation = await Conversation.findOne({
-      userId,
-      adminId,
-    });
 
-    if (!conversation) {
+
+
+export async function getQuoteHistory(userEmail) {
+  try {
+    await connectDB();
+
+    const quotes = await Quote.find({ userEmail }).sort({ createdAt: -1 });
+
+    if (quotes.length === 0) {
+      return { success: false, message: "No quote history found." };
+    }
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(quotes)),
+    };
+  } catch (error) {
+    console.error("Error fetching quote history:", error);
+    return { success: false, message: "Failed to fetch quote history." };
+  }
+}
+
+
+export async function getAllQuotesHistory() {
+  try {
+    await connectDB();
+    const quotes = await Quote.find({}).sort({ timestamp: -1 });
+
+    if (quotes.length === 0) {
       return { success: false, message: "No conversation found." };
     }
 
-    // Fetch all chat messages associated with this conversation
-    const messages = await Chat.find({ conversationId: conversation._id });
-
-    return { success: true, messages };
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(quotes)),
+    };
   } catch (error) {
     console.error(error);
     return { success: false, message: "Failed to fetch chat history." };
   }
 }
 
-
-
-export async function getChatHistory(userId, adminId) {
+export async function saveRequestQuote(formData) {
   try {
-    // Find conversation based on userId and adminId
-    const conversation = await Conversation.findOne({
-      userId,
-      adminId,
-    });
+      await connectDB();
 
-    if (!conversation) {
-      return { success: false, message: "No conversation found." };
-    }
+      const { name, email, phone, country, projectCategory, description, files } = formData;
 
-    // Fetch all chat messages associated with this conversation
-    const messages = await Chat.find({ conversationId: conversation._id });
+      let uploadedFiles = [];
 
-    return { success: true, messages };
+      if (Array.isArray(files)) {
+          uploadedFiles = files.map(file => ({
+              url: file.url,
+              fileType: file.fileType,
+              filename: file.filename
+          }));
+      }
+
+      const { error } = requestQuoteValidation.validate({
+        name, email, phone, country, projectCategory, description, uploadedFiles
+      });
+
+      if (error) {
+        return { success: false, message: error.details[0].message };
+      }
+      const newlyUploadedQuote = await RequestQuote.create({
+          name,
+          email,
+          phone,
+          country,
+          projectCategory,
+          description,
+          uploadedFiles
+      });
+
+      if (newlyUploadedQuote) {
+          return { success: true, message: "Request quote submitted successfully!" };
+      } else {
+          return { success: false, message: "Failed to submit request quote." };
+      }
+
   } catch (error) {
-    console.error(error);
-    return { success: false, message: "Failed to fetch chat history." };
+      console.error("Error saving request quote:", error);
+      return { success: false, message: "Failed to submit request quote." };
   }
 }
 
+
+
+
+export async function getAllQuote() {
+  try {
+    await connectDB();
+    const quotes = await RequestQuote.find({}).sort({ timestamp: -1 });
+
+    if (quotes.length === 0) {
+      return { success: false, message: "No Quote found." };
+    }
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(quotes)),
+    };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Failed to fetch quote history." };
+  }
+}

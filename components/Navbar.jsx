@@ -2,22 +2,20 @@
 import React, { useEffect, useState } from 'react'
 import { useAppContext } from '@/custom-hooks/Context'
 import CloseIcon from '@mui/icons-material/Close';
-import { UserButton } from '@clerk/nextjs';
+import { usePathname } from 'next/navigation';
 const Navbar = () => {
   const{isDropdownOpen, setIsDropdownOpen, isDropdown2, setIsDropdown2} = useAppContext();
   const [path, setPath] = useState("");
-
+const pathname = usePathname();
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setPath(window.location.pathname);
-    }
+      setPath(pathname);
   }, []);
   
   return (
         <div className="navbar overflow-x-hidden bg-transparent fixed top-0 z-50 flex items-center">
-  <div className="flex-1">
+  <div className="flex-1 ">
     <a className="">
-        <img className='object-contain rounded-2xl w-32 h-20' src="./logo.png" alt="logo" />
+        <img className='object-contain w-40 h-28' src="./logo1.png" alt="logo" />
     </a>
   </div>
   {
@@ -34,7 +32,7 @@ const Navbar = () => {
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
-        className="inline-block h-5 w-5 stroke-current">
+        className="inline-block h-7 w-7 stroke-current">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"

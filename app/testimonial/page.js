@@ -1,5 +1,6 @@
 "use client"
 import { getTestimonialAction } from '@/actions/page';
+import Dropdown from '@/components/Dropdown';
 import Testimonial from '@/components/Testimonial';
 import { useEffect, useState } from 'react';
 
@@ -14,6 +15,7 @@ const TestimonialPage = () => {
  }, [])
   return (
     <div className='py-20'>
+      <Dropdown />
        
   <div className="py-16">
       <h1 className="mb-10 text-5xl text-center font-bold">How our clients evaluate our expertise</h1>

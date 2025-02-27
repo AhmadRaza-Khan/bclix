@@ -14,19 +14,19 @@ let initialData = {
 export default function SignInPage() {
   const [data, setData] = useState(initialData);
   const router = useRouter();
-  const {user, setUser, setUserId} = useAppContext();
+  const {user, setUser, setUserEmail, userEmail, login} = useAppContext();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const uploadData = await LoginAction(data);
-      console.log(uploadData.id)
+
 
       if (uploadData.success) {
-        setUser(uploadData?.name)
-        setUserId(uploadData?.id)
-        
-        toast.success("Your account has been created successfully!😋", {
+        setUser(uploadData?.name);
+        setUserEmail(uploadData?.email);
+        login(uploadData, uploadData?.email);
+        toast.success("Your logged in successfully!😋", {
           style: {
             backgroundColor: "#333",
             color: "white",
@@ -45,6 +45,7 @@ export default function SignInPage() {
 
         setData(initialData);
         router.refresh();
+        router.push("/")
       }
     } catch (error) {
         toast.error("Failed to register due to: ", error, {
@@ -110,7 +111,7 @@ export default function SignInPage() {
    value={data.password}
    onChange={(e) => setData({ ...data, password: e.target.value })}
    className="grow" 
-   placeholder="Name" 
+   placeholder="Password" 
    />
 </label>
         {/* Submit Button */}
@@ -118,7 +119,7 @@ export default function SignInPage() {
           type="submit"
           className="w-full py-3 bg-indigo-600 text-white rounded-md font-semibold transition duration-300 hover:bg-indigo-700"
         >
-          Sign Up
+          Sign In
         </button>
       </form>
   </div>

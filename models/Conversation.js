@@ -1,16 +1,28 @@
 import mongoose, { Schema } from "mongoose";
 
-const ConversationSchema = new Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+const ConversationSchema = new Schema(
+  {
+    userEmail: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    adminEmail: {
+      type: String,
+      required: true,
+      trim: true,
+      default: "bclixtech@gmail.com",
+    },
+    messages: [
+      {
+        senderEmail: { type: String, required: true, trim: true },
+        message: { type: String, required: true },
+        timestamp: { type: Date, default: Date.now },
+      },
+    ],
   },
-  adminId: {
-    type: String,
-    default: new mongoose.Types.ObjectId("679ba0c05cf437805891a789"),
-  },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-const Conversation = mongoose.models.Conversation || mongoose.model("Conversation", ConversationSchema);
-export default Conversation;
+const UserConversation = mongoose.models.UserConversation || mongoose.model("UserConversation", ConversationSchema);
+export default UserConversation;

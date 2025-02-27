@@ -13,10 +13,25 @@ import Link from "next/link";
 import { useAppContext } from "@/custom-hooks/Context";
 import Chat from "@/components/Chat";
 import ChatWidget from "@/components/Chat";
-
+import { logoutAction } from "@/actions/page";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 export default function Home() {
-    const { isDropdownOpen, dropdownRef } = useAppContext();
 
+    const router = useRouter();
+    const { logout, setUser, setUserEmail, userEmail, show,isDropdownOpen, dropdownRef } = useAppContext();
+    const handleLogout = async() => {
+        const response = await logoutAction();
+        if (response.success) {
+            Cookies.remove('token', { path: '/' });
+            setUser("");
+            setUserEmail(""); 
+            logout()
+            router.push('/');
+        } else {
+            console.error(response.message);
+        }
+      };
   return (
 
     <div  className="bg-gradient-to-l from-black to-blue-950 overflow-x-hidden">
@@ -34,11 +49,27 @@ export default function Home() {
 
                     {/* Dropdown Content */}
                     <ul className="bg-white/0 backdrop-blur-md rounded-box w-52 h-fit p-10 mt-16 shadow">
-                        <li className="text-white my-3 text-xl"><a>Item 1</a></li>
-                        <li className="text-white my-3 text-xl"><a>Item 2</a></li>
-                        <li className="text-white my-3 text-xl"><a>Item 3</a></li>
-                        <li className="text-white my-3 text-xl"><a>Item 4</a></li>
-                        <li className="text-white my-3 text-xl"><a>Item 5</a></li>
+                    {
+                            userEmail ?
+                            <div className="flex flex-col justify-center gap-2 items-start">
+                              {
+                                show && 
+                                <Link href={'/admin-dashboard'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Admin Dashboard</Link>
+                              }
+                            <button onClick={handleLogout} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Sign Out</button>
+                            <Link href={'/chat'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Help</Link>
+                            <Link href={'/quote'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Quote</Link>
+                            <Link href={'/search-api'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Search Api</Link>
+                            </div>
+                            :
+                            <div className="flex flex-col justify-center gap-2 items-start">
+                            <Link href={'/sign-up'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Sign Up</Link>
+                            <Link href={'/sign-in'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Sign In</Link>
+                            <Link href={'/chat'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Help</Link>
+                            <Link href={'/quote'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Quote</Link>
+                            <Link href={'/search-api'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Search Api</Link>
+                            </div>
+                        }
                     </ul>
                 </div>
             )}

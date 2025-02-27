@@ -1,9 +1,8 @@
 "use client"
-
+import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import { getLimitedTestimonialAction } from '@/actions/page';
 import React, { useEffect, useState } from 'react'
 import RatingStars from './Rating';
-import ArrowRightAltOutlinedIcon from '@mui/icons-material/ArrowRightAltOutlined';
 import { useRouter } from 'next/navigation';
 const Card = () => {
    const [data, setData] = useState([]);
@@ -23,11 +22,11 @@ const Card = () => {
     get() 
    }, [])
   return (
-    <div className='grid grid-cols-4 justify-items-center mb-32 content-center place-items-center'>
+    <div className='grid grid-cols-5 mx-auto justify-items-center mb-32 content-center place-items-center'>
 
        {
         data?.map((value, i)=>(
-            <div key={i} className="card mx-2 hover:scale-110 transform transition duration-200 hover:shadow-[0_0_15px_5px_rgba(59,130,246,0.8)] w-60 min-h-72 bg-gradient-to-r from-blue-500 via-white/20 to-transparent animate-[shimmer_1.5s_infinite">
+            <div key={i} className="card mx-1 hover:scale-110 transform transition duration-200 hover:shadow-[0_0_15px_5px_rgba(59,130,246,0.8)] w-60 min-h-72 bg-gradient-to-r from-blue-500 via-white/20 to-transparent animate-[shimmer_1.5s_infinite">
             <figure>
                 {
                     value?.file.includes('image') ? 
@@ -50,18 +49,15 @@ const Card = () => {
               <p className='text-xs line-clamp-2'>{value?.description}</p>
               <p className='text-xs'>{value?.client}</p>
               <p className='text-xs'>{formatDate(value?.createdAt)}</p>
-
               <div className="card-actions justify-end">
               </div>
             </div>
           </div>
         ))
        }
-       <div className='flex'>
-            <p>Explore more</p>
-            <img src={'./seeMore.png'}
-            className='h-20 object-contain'
-            />
+       <div className='flex items-center'>
+        <p className='text-xl'>View More</p>
+       <ReadMoreIcon sx={{ fontSize: 70 }} />
        </div>
     </div>
   )
