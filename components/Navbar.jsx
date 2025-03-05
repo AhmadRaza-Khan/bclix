@@ -1,52 +1,18 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useAppContext } from '@/custom-hooks/Context'
 import CloseIcon from '@mui/icons-material/Close';
-import { usePathname } from 'next/navigation';
 const Navbar = () => {
-  const{isDropdownOpen, setIsDropdownOpen, isDropdown2, setIsDropdown2} = useAppContext();
-  const [path, setPath] = useState("");
-const pathname = usePathname();
-  useEffect(() => {
-      setPath(pathname);
-  }, []);
+  const{ isDropdown2, setIsDropdown2} = useAppContext();
   
   return (
         <div className="navbar overflow-x-hidden bg-transparent fixed top-0 z-50 flex items-center">
   <div className="flex-1 ">
     <a className="">
-        <img className='object-contain w-40 h-28' src="./logo1.png" alt="logo" />
+        <img className='object-contain w-40 h-28 rounded-lg backdrop-blur-sm' src="./logo.png" alt="logo" />
     </a>
-  </div>
-  {
-    path === "/"?
-    (
-      <>
-      {
-    isDropdownOpen?
-    <CloseIcon onClick={()=> setIsDropdownOpen(false)}/>
-    :
-      <div className="flex-none">
-    <button onClick={()=> setIsDropdownOpen(true)} className="btn btn-square btn-ghost">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        className="inline-block h-7 w-7 stroke-current">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
-      </svg>
-    </button>
-  </div>
-    
-  }
-      </>
-    )
-    :
-    <>
+  </div> 
+
       {
     isDropdown2?
     <CloseIcon onClick={()=> setIsDropdown2(false)}/>
@@ -67,8 +33,6 @@ const pathname = usePathname();
     </button>
   </div>
 }
-  </>
-  }
 </div>
   )
 }

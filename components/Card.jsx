@@ -4,6 +4,7 @@ import { getLimitedTestimonialAction } from '@/actions/page';
 import React, { useEffect, useState } from 'react'
 import RatingStars from './Rating';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 const Card = () => {
    const [data, setData] = useState([]);
    const router = useRouter();
@@ -55,10 +56,16 @@ const Card = () => {
           </div>
         ))
        }
-       <div className='flex items-center'>
-        <p className='text-xl'>View More</p>
-       <ReadMoreIcon sx={{ fontSize: 70 }} />
-       </div>
+       <Link href={"/search-api"} className="card mx-1 hover:scale-110 transform transition duration-200 hover:shadow-[0_0_15px_5px_rgba(59,130,246,0.8)] w-60 min-h-72 bg-gradient-to-r from-blue-500 via-white/20 to-transparent animate-[shimmer_1.5s_infinite">
+            <figure>
+            <ReadMoreIcon className="w-full h-[135px] mt-1 rounded-lg" sx={{ fontSize: 150 }} />
+            </figure>
+
+            <div className="flex flex-col my-auto text-slate-200 pl-4">
+            <p className='text-2xl text-center'>View More</p>
+            
+            </div>
+          </Link>
     </div>
   )
 }

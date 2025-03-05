@@ -11,7 +11,7 @@ const ChatWidget = () => {
     <div className="relative">
       <div
         onClick={()=>router.push(`/chat`)}
-        className="fixed bottom-16 right-10 animate-gradual-bounce bg-gradient-to-r from-blue-500 to-blue-800 text-white p-4 rounded-full shadow-lg cursor-pointer z-50 hover:bg-blue-700 transition-all"
+        className="fixed bottom-16 right-10 animate-gradual-bounce bg-gradient-to-r from-yellow-600 to-yellow-700 text-white p-4 rounded-full shadow-lg cursor-pointer z-50 hover:bg-blue-700 transition-all"
       >
         <MessageIcon />
       </div>

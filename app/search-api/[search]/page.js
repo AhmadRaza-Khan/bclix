@@ -1,4 +1,5 @@
 import { searchApi } from '@/actions/page';
+import Link from 'next/link';
 const Search = async({ params }) => {
   const { search } = await params;
   const result = await searchApi(search);
@@ -6,11 +7,12 @@ const Search = async({ params }) => {
   
   
   return (
-    <div className='flex items-center justify-center py-96'>
+<div className='flex flex-col py-20 gap-3 items-center justify-center'>
       
       <div className="card glass w-96">
     <figure>
       <img
+      className='contain w-full h-60'
         src={image}
         alt="car!" />
     </figure>
@@ -24,6 +26,7 @@ const Search = async({ params }) => {
 </div>
     </div>
   </div>
+  <Link href={"/search-api"} className="btn w-96 btn-active btn-warning">Go back</Link>
     </div>
   )
 }

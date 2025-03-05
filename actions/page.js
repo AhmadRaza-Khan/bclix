@@ -4,7 +4,7 @@ import connectDB from "@/database";
 import API from "@/models/Api";
 import Testimonial from "@/models/Testimonial";
 import User from "@/models/User";
-
+import Staff from "@/models/Staff";
 import jwt from 'jsonwebtoken';
 import bcrypt from "bcrypt";
 import UserConversation from "@/models/Conversation";
@@ -219,7 +219,7 @@ export async function getTestimonialAction() {
 export async function getLimitedTestimonialAction() {
   try {
       await connectDB();
-  const testimonialsData = await Testimonial.find({}).limit(4);
+  const testimonialsData = await Testimonial.find({}).limit(8);
             return {
               success: true,
               data: JSON.parse(JSON.stringify(testimonialsData)),
@@ -558,8 +558,6 @@ export async function saveRequestQuote(formData) {
 }
 
 
-
-
 export async function getAllQuote() {
   try {
     await connectDB();
@@ -576,5 +574,73 @@ export async function getAllQuote() {
   } catch (error) {
     console.error(error);
     return { success: false, message: "Failed to fetch quote history." };
+  }
+}
+
+
+export async function uploadNewStaff(formData) {
+  try {
+    await connectDB();
+    const { name, designation, intro, email, phone, status, image } = formData || {};
+
+    if (!name || !designation || !intro || !email || !phone || !image) {
+      return {
+        success: false,
+        message: "All fields are required!",
+      };
+    }
+
+    const newStaff = await Staff.create({ name, designation, intro, email, phone, status, image });
+
+    if (newStaff) {
+      return {
+        success: true,
+        message: "Staff added successfully!",
+      };
+    } else {
+      return {
+        success: false,
+        message: "Failed to add staff. Try again!",
+      };
+    }
+  } catch (error) {
+    console.error("Error uploading staff:", error);
+    return {
+      success: false,
+      message: "Something went wrong. Try again!",
+    };
+  }
+}
+
+
+export async function getAllStaff() {
+  try {
+    await connectDB();
+    const staff = await Staff.find({}).sort({ createdAt: -1 });
+
+    if (staff.length === 0) {
+      return { success: false, message: "No Staff Member found." };
+    }
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(staff)),
+    };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Failed to fetch staff history." };
+  }
+}
+
+
+export async function deleteStaff({id}) {
+  try {
+    await connectDB();
+        await Staff.deleteOne({id});
+
+        return { success: true, message: "Member deleted successfully" };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Failed to delete." };
   }
 }

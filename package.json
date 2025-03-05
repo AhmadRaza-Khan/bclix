@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.10.3",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
@@ -22,7 +21,6 @@
     "cloudinary": "^2.5.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2",
     "framer-motion": "^12.0.6",
     "install": "^0.13.0",
     "joi": "^17.13.3",
@@ -32,16 +30,10 @@
     "material-icons": "^1.13.13",
     "mongoose": "^8.9.5",
     "next": "15.1.6",
-    "pusher": "^5.2.0",
-    "pusher-js": "^8.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-toastify": "^11.0.3",
     "sentiment": "^5.0.2",
-    "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1",
-    "stream-chat": "^8.54.0",
-    "stream-chat-react": "^12.10.0",
     "tw-elements": "^2.0.0"
   },
   "devDependencies": {

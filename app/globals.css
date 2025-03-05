@@ -8,7 +8,7 @@
 }
 
 body {
-  @apply bg-gradient-to-l from-black to-blue-950 overflow-x-hidden;
+  @apply bg-gradient-to-l from-black to-amber-950 overflow-x-hidden;
   
 }
 

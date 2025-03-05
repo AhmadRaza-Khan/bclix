@@ -3,39 +3,21 @@ import Card from "@/components/Card";
 import VideoCarousel from "@/components/Carousel";
 import Carousel from "@/components/Carousel2";
 import Info from "@/components/Info";
-import Image from "next/image";
-import { useState } from "react";
 import { services } from "@/lib/data";
 import Services from "@/components/Services";
 import Carousel3 from "@/components/Carousel3";
 import EastIcon from '@mui/icons-material/East';
 import Link from "next/link";
 import { useAppContext } from "@/custom-hooks/Context";
-import Chat from "@/components/Chat";
 import ChatWidget from "@/components/Chat";
-import { logoutAction } from "@/actions/page";
-import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
+import StaffList from "@/components/Staff";
+import Dropdown from "@/components/Dropdown";
 export default function Home() {
-
-    const router = useRouter();
-    const { logout, setUser, setUserEmail, userEmail, show,isDropdownOpen, dropdownRef } = useAppContext();
-    const handleLogout = async() => {
-        const response = await logoutAction();
-        if (response.success) {
-            Cookies.remove('token', { path: '/' });
-            setUser("");
-            setUserEmail(""); 
-            logout()
-            router.push('/');
-        } else {
-            console.error(response.message);
-        }
-      };
+    const { isDropdown2, dropdownRef } = useAppContext();
   return (
 
-    <div  className="bg-gradient-to-l from-black to-blue-950 overflow-x-hidden">
-      <>{isDropdownOpen && (
+    <div  className="bg-gradient-to-r from-gray-950 to-black overflow-x-hidden">
+      <>{isDropdown2 && (
                 <div ref={dropdownRef} className="fixed right-5 w-screen flex justify-end h-full">
                     {/* Background Video */}
                     <video
@@ -47,30 +29,7 @@ export default function Home() {
                         <source src="./programming.mp4" type="video/mp4" />
                     </video>
 
-                    {/* Dropdown Content */}
-                    <ul className="bg-white/0 backdrop-blur-md rounded-box w-52 h-fit p-10 mt-16 shadow">
-                    {
-                            userEmail ?
-                            <div className="flex flex-col justify-center gap-2 items-start">
-                              {
-                                show && 
-                                <Link href={'/admin-dashboard'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Admin Dashboard</Link>
-                              }
-                            <button onClick={handleLogout} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Sign Out</button>
-                            <Link href={'/chat'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Help</Link>
-                            <Link href={'/quote'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Quote</Link>
-                            <Link href={'/search-api'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Search Api</Link>
-                            </div>
-                            :
-                            <div className="flex flex-col justify-center gap-2 items-start">
-                            <Link href={'/sign-up'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Sign Up</Link>
-                            <Link href={'/sign-in'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Sign In</Link>
-                            <Link href={'/chat'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Help</Link>
-                            <Link href={'/quote'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Quote</Link>
-                            <Link href={'/search-api'} className="text-white hover:text-2xl hover:text-slate-300 text-xl">Search Api</Link>
-                            </div>
-                        }
-                    </ul>
+                    <Dropdown />
                 </div>
             )}
       </>
@@ -79,14 +38,11 @@ export default function Home() {
       <Info />
 
       {/* feedbacke */}
-      <h3 className=" text-center text-3xl font-extrabold text-slate-400 my-28">The services we have rendered and how our clients feedbacked</h3>
-      
+      <h3 className=" text-center text-3xl text-white my-14">The services we have rendered and how our clients feedbacked</h3>
             <Card />
-
-
 {/* services */}
-<h3 className="text-center my-16 text-5xl font-extrabold text-slate-400">Our Services</h3>
-      <div className="grid grid-cols-3 gap-4 justify-items-center content-center place-items-center">
+<h3 className="text-center text-3xl text-white">Our Services</h3>
+      <div className="grid grid-cols-4 justify-items-center content-center place-items-center">
         {
           services.map((value, i)=>(
             <Services key={i} title={value.title} img={value.img} desc={value.desc} />
@@ -96,18 +52,18 @@ export default function Home() {
 
 {/* companies logos carousel */}
 <div className="flex items-center justify-center">
-<h3 className="text-center my-12 mt-32 text-3xl font-extrabold text-slate-400">Search your API in our API Bank of 500+</h3>
+<h3 className="text-center my-12 mt-10 text-3xl text-white">Search your API in our API Bank of 500+</h3>
 <Link
   href="/search-api"
-  className="rounded my-12 mt-32 py-3 px-4 text-3xl font-extrabold hover:bg-gradient-to-r from-black via-blue-500 to-blue-800 inline-block text-center"
+  className="rounded text-white my-12 mt-12 py-3 px-4 text-3xl hover:bg-gradient-to-r from-yellow-600 via-yellow-700 to-yellow-800 inline-block text-center"
 >
-  Get your API <EastIcon />
+  Get your API <EastIcon sx={{ fontSize: 50 }} />
 </Link>
 
 </div>
 <Carousel3 />
 <ChatWidget />
-      
+      <StaffList />
     </div>
   );
 }
